@@ -128,7 +128,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export PATH="$PATH:/opt/nvim-linux64/bin"
+export PATH="$PATH:~/bin:/opt/nvim-linux64/bin"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
