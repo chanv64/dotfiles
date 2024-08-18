@@ -107,10 +107,6 @@ debian_commands() {
 		cp ~/ref/dt_dotfiles/.config/fish/config.fish ~/.config/fish
 		cp ~/ref/dt_dotfiles/.config/starship.toml ~/.config
 
-		# clone my dotfiles to copy dot_bashrc
-		git clone https://gitlab.com/chanv64/dotfiles.git
-		cp dotfiles/dot_bashrc .bashrc
-
 		# fish uses DT colorscript. Install it
 		cd ~/ref
 		git clone https://gitlab.com/dwt1/shell-color-scripts.git
@@ -128,6 +124,13 @@ debian_commands() {
 
 		# install chezmoi for dotfiles management
 		sudo snap install chezmoi --classic
+
+		# do this after chezmoi install
+		# clone my dotfiles to copy dot_bashrc
+		git clone https://gitlab.com/chanv64/dotfiles.git
+		#chezmoi -v apply
+		# need to test below
+		#sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
 
 		# install chezmoi for dotfiles management
 		sudo apt install -y neofetch
@@ -233,6 +236,8 @@ arch_commands() {
 	printf -- '%s\n' "Lastly, if you want to use your fish shell as permanent shell, execute sudo chsh -s /usr/bin/fish"
 
 	# install chezmoi for dotfiles management
+	# need to test this command line - 
+	# sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
 	sudo pacman -S --noconfirm chezmoi
 
 	# install neofetch
