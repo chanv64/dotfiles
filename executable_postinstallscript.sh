@@ -217,8 +217,8 @@ arch_commands() {
 	cp ~/ref/dt_dotfiles/.config/starship.toml ~/.config
 
 	# clone my dotfiles to copy dot_bashrc
-	git clone https://gitlab.com/chanv64/dotfiles.git
-	cp dotfiles/dot_bashrc .bashrc
+	#git clone https://gitlab.com/chanv64/dotfiles.git
+	#cp dotfiles/dot_bashrc .bashrc
 
 	# fish uses DT colorscript. Install it
 	cd ~/ref
@@ -239,6 +239,11 @@ arch_commands() {
 	# need to test this command line - 
 	# sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
 	sudo pacman -S --noconfirm chezmoi
+	chezmoi init
+	cd ~/.local/share/chezmoi
+	git remote add origin https://github.com/chanv64/dotfiles.git
+	git pull origin main
+	chezmoi -v apply
 
 	# install neofetch
 	sudo pacman -S --noconfirm neofetch
