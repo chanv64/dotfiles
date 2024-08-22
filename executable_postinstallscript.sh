@@ -6,6 +6,125 @@
 # Date:         20180822
 # Licence:      WTFPL
 
+# Function to execute commands for Arch Linux
+arch_commands() {
+    echo "Arch Linux detected."
+    # Make sure timezone is set correctly
+    #sudo timedatectl set-timezone Asia/Singapore
+    echo "Performing additional Arch-specific actions..."
+    # Start by updating everything
+    printf -- '%s\n' "Update System Packages"
+    sudo pacman -Syu
+
+    # first thing to do is to install yay package manager
+    # yay needs git and gcc as pre-requisite
+    pacman -Qi gcc &>/dev/null || sudo pacman -S gcc
+    pacman -Qi git &>/dev/null || sudo pacman -S git
+    command -v yay >/dev/null 2>&1 || { git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si; }
+
+    # assumming here, yay is already installed. For the rest of the packages here, use yay iso pacman
+    printf -- '%s\n' "Install SSH server"
+    yay -S --noconfirm openssh-server
+     
+    # Next, install our desired packages
+    printf -- '%s\n' "Install python3 and related packages"
+    yay -S --noconfirm python3
+    yay -S --noconfirm python3-pip
+    yay -S --noconfirm python-pipenv
+    yay -S --noconfirm python3-venv
+
+    printf -- '%s\n' "Install eza"
+    yay -S --noconfirm eza 
+
+    printf -- '%s\n' "Install neovim"
+    yay -S --noconfirm curl 
+    yay -S --noconfirm wget 
+    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    sudo rm -rf /opt/nvim
+    sudo tar -C /opt -xzf nvim-linux64.tar.gz
+    # Install kickstart from my repo
+    printf -- '%s\n' "Install kickstart from my repo"
+    # install dependencies (read the installation notes at https://github.com/chanv64/mykickstart-nvim)
+    yay -S --noconfirm make unzip ripgrep
+    mkdir -p ~/.config/nvim
+    git clone https://github.com/chanv64/mykickstart-nvim.git ~/.config/nvim
+
+    # For mason pyright to work, need nodejs and npm
+    # installs nvm (Node Version Manager)
+    printf -- '%s\n' "Install nvm (Node Version Manager)"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+
+    printf -- '%s\n' "After installation script done, reboot and do the following to install node:"
+    printf -- '%s\n' "nvm install 20"
+    printf -- '%s\n' "verifies the right Node.js version is in the environment"
+    printf -- '%s\n' "node -v # should print ver number"
+    printf -- '%s\n' "verifies the right npm version is in the environment"
+    printf -- '%s\n' "npm -v # should print '10.8.1'"
+    # download and install Node.js (you may need to restart the terminal)
+    # nvm install 20
+
+    # verifies the right Node.js version is in the environment
+    # node -v # should print `v20.16.0`
+
+    # verifies the right npm version is in the environment
+    # npm -v # should print `10.8.1`
+
+    printf -- '%s\n' "Then add this to your shell config (~/.bashrc, ~/. zshrc, ...):"
+    printf -- '%s\n' 'export PATH="$PATH:/opt/nvim-linux64/bin"'
+    export PATH="$PATH:/opt/nvim-linux64/bin"
+
+    printf -- '%s\n' "Install fish shell"
+    yay -S --noconfirm fish
+    #
+    printf -- '%s\n' "After install fish, install starship"
+    curl -sS https://starship.rs/install.sh | sh
+
+    printf -- '%s\n' "After install fish, clone dt github to get example fish and starship config"
+    mkdir ~/ref
+    git clone https://gitlab.com/dwt1/dotfiles.git ~/ref/dt_dotfiles
+    mkdir -p ~/.config/fish
+    cp ~/ref/dt_dotfiles/.config/fish/config.fish ~/.config/fish
+    cp ~/ref/dt_dotfiles/.config/starship.toml ~/.config
+
+    # clone my dotfiles to copy dot_bashrc
+    #git clone https://gitlab.com/chanv64/dotfiles.git
+    #cp dotfiles/dot_bashrc .bashrc
+
+    # fish uses DT colorscript. Install it
+    cd ~/ref
+    git clone https://gitlab.com/dwt1/shell-color-scripts.git
+    cd shell-color-scripts
+    sudo make install
+    yay -S --noconfirm zoxide
+
+    # install fzf
+    yay -S --noconfirm fzf
+
+    printf -- '%s\n' "Get the JetBrainsMono Nerd Font"
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
+    bash -c  "$(curl -fsSL https://raw.githubusercontent.com/officialrajdeepsingh/nerd-fonts-installer/main/install.sh)"
+
+    printf -- '%s\n' "Lastly, if you want to use your fish shell as permanent shell, execute sudo chsh -s /usr/bin/fish"
+
+    # install chezmoi for dotfiles management
+    # need to test this command line - 
+    # sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
+    yay -S --noconfirm chezmoi
+    chezmoi init
+    cd ~/.local/share/chezmoi
+    git remote add origin https://github.com/chanv64/dotfiles.git
+    git pull origin main
+    chezmoi apply
+    git branch -m master main
+
+    # install neofetch
+    yay -S --noconfirm neofetch
+
+    # install kitty
+    yay -S --noconfirm kitty
+
+}
+
 # Function to execute commands for Debian
 debian_commands() {
     echo "Debian detected."
@@ -38,7 +157,7 @@ debian_commands() {
     sudo apt update -y && apt upgrade -y
 
     printf -- '%s\n' "Install SSH server"
-    # sudo apt install openssh-server
+    sudo apt install openssh-server
      
     # Next, install our desired packages
     printf -- '%s\n' "Install python3"
@@ -48,6 +167,8 @@ debian_commands() {
     sudo apt install -y python-virtualenv
 
     printf -- '%s\n' "Install eza"
+    sudo apt install -y wget
+    sudo apt install -y curl
     sudo apt install -y gpg
     sudo mkdir -p /etc/apt/keyrings
     wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
@@ -152,114 +273,7 @@ debian_commands() {
     # sudo flatpak install 1 2 3   # Add any other Debian-specific commands here
 }
 
-# Function to execute commands for Arch Linux
-arch_commands() {
-    echo "Arch Linux detected."
-    # Make sure timezone is set correctly
-    #sudo timedatectl set-timezone Asia/Singapore
-    echo "Performing additional Arch-specific actions..."
-    # Start by updating everything
-    printf -- '%s\n' "Update System Packages"
-    sudo pacman -Syu
 
-    printf -- '%s\n' "Install SSH server"
-    #sudo pacman -S --noconfirm openssh-server
-     
-    # Next, install our desired packages
-    printf -- '%s\n' "Install python3 and related packages"
-    sudo pacman -S --noconfirm python3
-    sudo pacman -S --noconfirm python3-pip
-    sudo pacman -S --noconfirm pipenv
-    sudo pacman -S --noconfirm python3-venv
-
-    printf -- '%s\n' "Install eza"
-    sudo pacman -S --noconfirm eza 
-
-    printf -- '%s\n' "Install neovim"
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-    sudo rm -rf /opt/nvim
-    sudo tar -C /opt -xzf nvim-linux64.tar.gz
-    # Install kickstart from my repo
-    printf -- '%s\n' "Install kickstart from my repo"
-    # install dependencies (read the installation notes at https://github.com/chanv64/mykickstart-nvim)
-    sudo pacman -S --noconfirm git make unzip gcc ripgrep
-    mkdir -p ~/.config/nvim
-    git clone https://github.com/chanv64/mykickstart-nvim.git ~/.config/nvim
-
-    # For mason pyright to work, need nodejs and npm
-    # installs nvm (Node Version Manager)
-    printf -- '%s\n' "Install nvm (Node Version Manager)"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-
-    printf -- '%s\n' "After installation script done, reboot and do the following to install node:"
-    printf -- '%s\n' "nvm install 20"
-    printf -- '%s\n' "verifies the right Node.js version is in the environment"
-    printf -- '%s\n' "node -v # should print ver number"
-    printf -- '%s\n' "verifies the right npm version is in the environment"
-    printf -- '%s\n' "npm -v # should print '10.8.1'"
-    # download and install Node.js (you may need to restart the terminal)
-    # nvm install 20
-
-    # verifies the right Node.js version is in the environment
-    # node -v # should print `v20.16.0`
-
-    # verifies the right npm version is in the environment
-    # npm -v # should print `10.8.1`
-
-    printf -- '%s\n' "Then add this to your shell config (~/.bashrc, ~/. zshrc, ...):"
-    printf -- '%s\n' 'export PATH="$PATH:/opt/nvim-linux64/bin"'
-    export PATH="$PATH:/opt/nvim-linux64/bin"
-
-    printf -- '%s\n' "Install fish shell"
-    sudo pacman -S --noconfirm fish
-    #
-    printf -- '%s\n' "After install fish, install starship"
-    curl -sS https://starship.rs/install.sh | sh
-
-    printf -- '%s\n' "After install fish, clone dt github to get example fish and starship config"
-    mkdir ~/ref
-    git clone https://gitlab.com/dwt1/dotfiles.git ~/ref/dt_dotfiles
-    mkdir -p ~/.config/fish
-    cp ~/ref/dt_dotfiles/.config/fish/config.fish ~/.config/fish
-    cp ~/ref/dt_dotfiles/.config/starship.toml ~/.config
-
-    # clone my dotfiles to copy dot_bashrc
-    #git clone https://gitlab.com/chanv64/dotfiles.git
-    #cp dotfiles/dot_bashrc .bashrc
-
-    # fish uses DT colorscript. Install it
-    cd ~/ref
-    git clone https://gitlab.com/dwt1/shell-color-scripts.git
-    cd shell-color-scripts
-    sudo make install
-    sudo pacman -S --noconfirm zoxide
-
-    sudo pacman -S --noconfirm fzf
-
-    printf -- '%s\n' "Get the JetBrainsMono Nerd Font"
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
-    bash -c  "$(curl -fsSL https://raw.githubusercontent.com/officialrajdeepsingh/nerd-fonts-installer/main/install.sh)"
-
-    printf -- '%s\n' "Lastly, if you want to use your fish shell as permanent shell, execute sudo chsh -s /usr/bin/fish"
-
-    # install chezmoi for dotfiles management
-    # need to test this command line - 
-    # sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
-    sudo pacman -S --noconfirm chezmoi
-    chezmoi init
-    cd ~/.local/share/chezmoi
-    git remote add origin https://github.com/chanv64/dotfiles.git
-    git pull origin main
-    chezmoi apply
-    git branch -m master main
-
-    # install neofetch
-    sudo pacman -S --noconfirm neofetch
-
-    # install kitty
-    sudo pacman -S --noconfirm kitty
-
-}
 
 # Function to handle unknown OS
 unknown_os() {

@@ -238,5 +238,8 @@ colorscript random
 ### SETTING THE STARSHIP PROMPT ###
 starship init fish | source
 
+# Set up fzf key bindings
+fzf --fish | source
+
 ### SETUP ZOXIDE ###
 zoxide init fish | source
