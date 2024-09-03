@@ -120,8 +120,23 @@ arch_commands() {
     # install neofetch
     yay -S --noconfirm neofetch
 
-    # install kitty
+    # install terminals
     yay -S --noconfirm kitty
+    yay -S --noconfirm alacritty
+    yay -S --noconfirm wezterm
+
+    # install other good stuff
+    yay -S --noconfirm bat
+    yay -S --noconfirm btop
+    yay -S --noconfirm htop
+    yay -S --noconfirm dust
+    yay -S --noconfirm man
+    yay -S --noconfirm rsync
+    yay -S --noconfirm tmux
+    yay -S --noconfirm locate
+    sudo updatedb
+    yay -S --noconfirm ranger       #filemanager
+    yay -S --noconfirm xh           #works like curl
 
 }
 
