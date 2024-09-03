@@ -1,0 +1,42 @@
+syntax on
+set clipboard=unnamed
+set foldlevelstart=99   " set to inactive -1 but doesn't work. Set to 99 to always open all folds
+"colorscheme desert
+" For everything else, use a tab width of 4 space chars. 
+
+" Search Options
+"set hlsearch        " Enable search highlighting
+set ignorecase      " Ignore case when searching
+set incsearch       " Incremental search that shows partial matches.
+set smartcase       " Automatically switch search to case-sensitive when search query contains an uppercase letter.
+
+" Indenting
+set autoindent
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+    " Use filetype detection and file-based automatic indenting.
+    filetype plugin indent on
+
+    " Use actual tab chars in Makefiles.
+    autocmd FileType make set tabstop=8 shiftwidth=8 softtabstop=0 noexpandtab
+endif
+
+set tabstop=4       " The width of a TAB is set to 4.                     
+                    " Still it is a \t. It is just that                     
+                    " Vim will interpret it to be having                     
+                    " a width of 4. 
+set shiftround      " When shifting lines, round the indentation to the nearest multiple of "shiftwidth."
+set shiftwidth=4    " Indents will have a width of 4. 
+set softtabstop=4   " Sets the number of columns for a TAB. 
+set expandtab       " Expand TABs to spaces.
+
+set number
+set title
+set laststatus=1
+
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
