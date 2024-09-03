@@ -1,6 +1,15 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+#
+# bash functions
+search_string() {
+    if [ -z "$1" ]; then
+        echo "Usage: asgrep <string>"
+        return 1
+    fi
+    find . -type f -exec grep --color=always -H "$1" {} \;
+}
 
 # If not running interactively, don't do anything
 case $- in
@@ -72,16 +81,26 @@ xterm*|rxvt*)
     ;;
 esac
 
+### ALIASES
+
+# navigation
+alias cd='z'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias .3='cd ../../..'
+alias .4='cd ../../../..'
+alias .5='cd ../../../../..'
+
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
+    # alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
 
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+    alias egrep='grep -E --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -90,21 +109,66 @@ fi
 # some more ls aliases
 # alias ll='ls -alF'
 # alias la='ls -A'
-alias l='ls -CF'
+# alias l='ls -CF'
 
 # Changing "ls" to "eza"
+alias l='eza --icons'
 alias ls='eza -al --color=always --group-directories-first' # my preferred listing
 alias la='eza -a --color=always --group-directories-first'  # all files and dirs
 alias ll='eza -l --color=always --group-directories-first'  # long format
 alias lt='eza -aT --color=always --group-directories-first' # tree listing
-alias l.='eza -a | egrep "^\."'
-alias l.='eza -al --color=always --group-directories-first ../' # ls on the PARENT directory
+alias l.='eza -a | grep -E "^\."'
+#alias l.='eza -al --color=always --group-directories-first ../' # ls on the PARENT directory
 alias l..='eza -al --color=always --group-directories-first ../../' # ls on directory 2 levels up
 alias l...='eza -al --color=always --group-directories-first ../../../' # ls on directory 3 levels up
 
+# Other stuff
 alias cz='chezmoi'
 
 alias inv='vim $(fzf -m --preview="bat --color=always")'
+alias asgrep='search_string'
+
+# alias related to .bashrc
+alias n.='nvim ~/.bashrc'
+alias s.='source ~/.bashrc'
+
+# get top process eating memory
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+
+# get top process eating cpu
+alias pscpu='ps auxf | sort -nr -k 3'
+alias pscpu10='ps auxf | sort -nr -k 3 | head -10'
+
+# git related commands
+alias gaddall='git add .'
+alias gcomm='git commit -m'
+alias gpush='git push origin'
+alias gst='git status'
+alias glog='git log --graph --decorate --oneline'
+alias gr='git config --get remote.origin.url'
+
+# misc stuff
+alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
+alias vpsuser="ssh chanv@172.104.184.148"
+alias vpsroot="ssh root@172.104.184.148"
+#alias wt='curl wttr.in/singapore?format="%C+%m+%t+%h+%f\n"'
+alias wt='curl wttr.in/singapore?0Q'
+alias hg='history|grep'
+alias cls='clear'
+alias runpy='pipenv run python'
+alias checktimer='systemctl --user status runibinfo.service | awk '\''/Active:/ { status=$2; sub(/.*; /,"",$0); print status, $0 }'\'''
+
+
+alias tw='echo -e "Ctrl-b c  # create new window\nCtrl-b n  # next window\nCtrl-b p  # previous window\n\
+Ctrl-b l  # last used window\nCtrl-b 0..9  # select window by number\nCtrl-b w  # list windows\n\
+Ctrl b &  # kill window"'
+alias tp='echo -e "Ctrl-b %  # split pane vertically\nCtrl-b \"  # split pane horizontally\n\
+Ctrl-b cursor keys  # move between panes\nCtrl-b o  # next pane\nCtrl-b ;  # go to last active pane\n\
+Ctrl-b x  # kill pane"'
+
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -130,6 +194,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
+bind 'set show-all-if-ambiguous on'
+bind 'TAB:menu-complete'
+
 export PATH="$PATH:~/bin:/opt/nvim-linux64/bin"
 
 export NVM_DIR="$HOME/.nvm"
@@ -143,5 +210,5 @@ eval "$(fzf --bash)"
 eval "$(zoxide init bash)"
 
 eval "$(starship init bash)"
-
+eval `cat ~/.fehbg`
 neofetch
