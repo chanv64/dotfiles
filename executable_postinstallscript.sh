@@ -101,8 +101,9 @@ arch_commands() {
     yay -S --noconfirm fzf
 
     printf -- '%s\n' "Get the JetBrainsMono Nerd Font"
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
-    bash -c  "$(curl -fsSL https://raw.githubusercontent.com/officialrajdeepsingh/nerd-fonts-installer/main/install.sh)"
+    yay -S ttf-jetbrains-mono-nerd
+    # wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
+    # bash -c  "$(curl -fsSL https://raw.githubusercontent.com/officialrajdeepsingh/nerd-fonts-installer/main/install.sh)"
 
     printf -- '%s\n' "Lastly, if you want to use your fish shell as permanent shell, execute sudo chsh -s /usr/bin/fish"
 
@@ -137,6 +138,7 @@ arch_commands() {
     sudo updatedb
     yay -S --noconfirm ranger       #filemanager
     yay -S --noconfirm xh           #works like curl
+    yay -S --noconfirm jq           #for tmux fabioluciano/tmux-tokyo-night
 
 }
 
