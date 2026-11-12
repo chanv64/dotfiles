@@ -131,7 +131,8 @@ alias l...='eza -al --icons --color=always --group-directories-first ../../../' 
 # Other stuff
 alias cz='chezmoi'
 
-alias cd='z'
+# Use zoxide for cd, except in Claude Code's own shells, which lack zoxide's hook
+[[ -z "$CLAUDECODE" ]] && alias cd='z'
 alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
 
 # Set up fzf key bindings and fuzzy completion
