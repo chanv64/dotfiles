@@ -1,0 +1,6 @@
+theme = Catppuccin Mocha
+font-size = 18
+window-height = 62
+window-width = 100
+macos-option-as-alt = true
+keybind = shift+enter=text:\n

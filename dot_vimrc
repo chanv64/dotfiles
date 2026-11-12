@@ -1,0 +1,333 @@
+"---------------------------------------
+" Vim with all all enhancements
+"---------------------------------------
+
+"---------------------------------------
+" General Settings
+"---------------------------------------
+set nocompatible
+set hidden
+set clipboard=unnamed
+"set listchars=tab:>- ,trail:.
+set listchars=trail:>
+
+"      
+" Tab Settings  
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+" end Tab Settings
+
+"set cursorline
+"  set cursorcolumn
+"  highlight CursorLine ctermbg=Yellow cterm=bold guibg=#2b2b2b
+"  highlight CursorColumn ctermbg=Yellow cterm=bold guibg=#2b2b2b
+
+set wildmode=longest,list,full
+
+set splitbelow splitright
+
+set spell spelllang=en_us
+
+"let mapleader = ","
+let mapleader = "\<space>"
+
+"---------------------------------------
+" Kay maps
+"---------------------------------------
+
+" Basic Settings
+set mouse=
+map <ScrollWheelUp> <C-Y>
+map <S-ScrollWheelUp> <C-U>
+map <ScrollWheelDown> <C-E>
+map <S-ScrollWheelDown> <C-D>
+
+nmap <leader>gf :edit <cfile><cr>
+"~/Projects/ts2/ts.py
+"~/vimhotkeys.txt
+
+""" Buffer related
+nmap <leader>bd :bd<cr>
+nmap <leader>wbd :w <bar> :bd<cr>
+nmap <leader>n :bnext<cr>
+
+set ignorecase
+set smartcase
+set number
+"set relativenumber
+set termguicolors
+set t_Co=256
+
+" Mapping to reload configuration
+nmap <leader>so :source ~/_vimrc<cr>
+
+if has("gui_running")
+  if has("gui_gtk2")
+    set guifont=Inconsolata\ 12
+  elseif has("gui_macvim")
+    set guifont=Menlo\ Regular:h14
+  elseif has("gui_win32")
+    set guifont=Consolas:h11:cANSI
+  endif
+endif
+
+filetype plugin on
+filetype off
+set pythonthreedll=python311.dll
+if has('python3')
+  silent! python3 1
+endif
+
+" Vundle setup
+" set the runtime path to include Vundle and initialize
+" set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=c:\\home\\chanv64\\vimfiles\\bundle\\Vundle.vim
+
+"call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+" call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+"Plugin 'VundleVim/Vundle.vim'
+
+"set encoding=utf-8
+"Plugin 'Valloric/YouCompleteMe'
+
+" All of your Plugins must be added before the following line
+"call vundle#end()            " required
+"filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+"
+
+function! Eatchar(pat)
+  let c = nr2char(getchar(0))
+  return (c =~ a:pat) ? '' : c
+endfunction
+
+" shortcutting split navigation
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+
+  call plug#begin()
+  " below are some vim plugin for demonstration purpose
+"  Plug 'joshdick/onedark.vim'
+"  Plug 'iCyMind/NeoSolarized'
+
+"  Plug 'vim-airline/vim-airline'
+"  Plug 'vim-airline/vim-airline-themes'
+
+""  Plug 'ycm-core/YouCompleteMe'
+""  Plug 'roxma/nvim-completion-manager'
+"  Plug 'lifepillar/vim-mucomplete'
+"  Plug 'AutoComplPop/AutoComplPop'
+
+  " Track the engine.
+"  Plug 'SirVer/UltiSnips'
+
+  " Snippets are separated from the engine. Add this if you want them:
+"  Plug 'honza/vim-snippets'
+
+"  Plug 'scrooloose/nerdtree'
+
+"  Plug 'preservim/nerdcommenter'
+
+"  Plug 'dense-analysis/ale'
+
+"  Plug 'nvie/vim-flake8'
+
+"  Plug 'flazz/vim-colorschemes'
+
+"  Plug 'felixhummel/setcolors.vim'
+
+"  Plug 'sjbach/lusty'
+
+"  Plug 'wincent/command-t'
+
+"  Plug 'mileszs/ack.vim'
+
+  call plug#end()
+
+  " NerdTree Settings
+  nmap <C-n> :NERDTreeToggle<cr>
+
+  " open NerdTree automatically
+  autocmd VimEnter * NERDTree
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+  set completeopt+=menuone
+  set completeopt+=noselect
+  let g:mucomplete#enable_auto_at_startup = 1
+  "
+
+ hi clear SpellBad                                                
+ hi SpellBad cterm=underline                                      
+ autocmd BufEnter _vimrc set nospell
+ autocmd BufLeave _vimrc set spell
+" hi clear SpellRare                                               
+" hi SpellRare cterm=underline                                     
+" hi clear SpellCap                                                
+" hi SpellCap cterm=underline                                      
+" hi clear SpellLocal
+" hi SpellLocal cterm=underline
+
+"colorscheme default
+"colorscheme onedark
+"colorscheme wombat
+"colorscheme molokai
+"colorscheme elflord
+"colorscheme codedark
+"colorscheme mojave
+
+  " macro
+  let @a = 'yyp'
+"  nnoremap <Leader>g :LustyBufferGrep<cr>
+"  nnoremap <Leader>f :LustyBufferExplorer<cr>
+  nnoremap <Leader>" viw<esc>a"<esc>bi"<esc>lel
+  nnoremap <Leader>Y y$
+  autocmd FileType c :iabbrev <buffer> vo void ()<cr>{<cr>}<esc>bbi<c-r>=Eatchar('\s')<cr>
+  autocmd FileType c :iabbrev <buffer> iff if ()<cr>{<cr>}<esc>bba<c-r>=Eatchar('\s')<cr>
+  autocmd FileType c :iabbrev <buffer> els else<cr>{<cr>}<esc>bbe<c-r>=Eatchar('\s')<cr>
+
+  "enable syntax highlighting
+  syntax on
+
+	  "use c indentation style and syntax highlighting for c, c++, and c0 files
+  autocmd FileType c,cpp :set cindent
+  autocmd FileType c,cpp :setf c
+  autocmd FileType c,cpp :set expandtab
+  au BufEnter *.c0 setf c
+  au BufEnter *.c0 set cindent 
+  au BufEnter *.c0 set expandtab
+
+  "use python indentation style and syntax highlighting for python
+  autocmd FileType py set tabstop=4
+  autocmd FileType py set shiftwidth=4
+  autocmd FileType py set expandtab
+  autocmd FileType py setf python
+  autocmd BufEnter *.py colorscheme atom-dark-256
+
+  let g:ale_linters = {'python': ['flake8']}
+
+  " Sets how many lines of history VIM has to remember
+  set history=700
+
+  " Open and close all the three plugins on the same time
+"  nmap <F8>   :TrinityToggleAll<CR>
+
+  " Open and close the srcexpl.vim separately
+"  nmap <F9>   :TrinityToggleSourceExplorer<CR>
+
+  " Open and close the taglist.vim separately
+"  nmap <F10>  :TrinityToggleTagList<CR>
+
+  " Open and close the NERD_tree.vim separately
+"  nmap <F11>  :TrinityToggleNERDTree<CR>
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+  " Tell vim to remember certain things when we exit
+  "  '10  :  marks will be remembered for up to 10 previously edited files
+  "  "100 :  will save up to 100 lines for each register
+  "  :20  :  up to 20 lines of command-line history will be remembered
+  "  %    :  saves and restores the buffer list
+  "  n... :  where to save the viminfo files
+"  set viminfo='10,\"100,:20,%,nC:\\vim\\vim82\syntax\viminfo.vim
+  function! ResCur()
+  if line("'\"") <= line("$")
+    normal! g`"
+    return 1
+  endif
+  endfunction
+  
+  augroup insCtr
+	  autocmd!
+	  autocmd InsertEnter * norm zz
+  augroup END
+
+  augroup resCur
+    autocmd!
+    autocmd BufWinEnter * call ResCur()
+  augroup END
+
+  if has("autocmd")
+    augroup templates
+      autocmd BufNewFile *.pl 0r c:\\vim\\templates\\skeleton.pl
+    augroup END
+  endif
+
+" line below doesn't seem to be working
+"
+" Use the internal diff if available.
+" Otherwise use the special 'diffexpr' for Windows.
+if &diffopt !~# 'internal'
+  set diffexpr=MyDiff()
+endif
+function MyDiff()
+  let @a = 'yyp'
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg1 = substitute(arg1, '!', '\!', 'g')
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg2 = substitute(arg2, '!', '\!', 'g')
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let arg3 = substitute(arg3, '!', '\!', 'g')
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      if empty(&shellxquote)
+        let l:shxq_sav = ''
+        set shellxquote&
+      endif
+      let cmd = '"' . $VIMRUNTIME . '\diff"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  let cmd = substitute(cmd, '!', '\!', 'g')
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+  if exists('l:shxq_sav')
+    let &shellxquote=l:shxq_sav
+  endif
+  " Return to last edit position when opening files (You want this!)
+  " Only do this part when compiled with support for autocommands
+if has("autocmd")
+  augroup redhat
+  autocmd!
+  " When editing a file, always jump to the last cursor position
+    autocmd BufReadPost *
+      \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+      \ |   exe "normal! g`\""
+      \ | endif
+  augroup END
+
+endif
+endfunction
+
+
+

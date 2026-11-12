@@ -1,0 +1,74 @@
+set -g default-terminal "tmux-256color"
+# set -g default-terminal "kitty"
+set -ag terminal-overrides ",xterm-256color:RGB"
+
+# https://github.com/3rd/image.nvim/?tab=readme-ov-file#tmux
+# This is needed by the image.nvim plugin
+set -gq allow-passthrough on
+# This is related to the `tmux_show_only_in_active_window = true,` config in
+# image.nvim
+set -g visual-activity off
+
+set -g prefix C-a
+unbind C-b
+bind-key C-a send-prefix
+
+unbind %
+bind | split-window -h 
+
+unbind '"'
+bind - split-window -v
+
+# Reload the tmux configuration, display a 2 second message
+unbind r
+bind r source-file ~/.config/tmux/tmux.conf \; display-message -d 2000 "Configuration reloaded!"
+
+bind j resize-pane -D 5
+bind k resize-pane -U 5
+bind l resize-pane -R 5
+bind h resize-pane -L 5
+
+bind -r m resize-pane -Z
+
+set -g mouse on
+
+# This enables vim nagivation
+# If for example I'm in the scrolling mode (yellow) can navigate with vim motions
+# search with /, using v for visual mode, etc
+set-window-option -g mode-keys vi
+
+bind-key -T copy-mode-vi 'v' send -X begin-selection # start selecting text with "v"
+bind-key -T copy-mode-vi 'y' send -X copy-selection # copy text with "y"
+
+unbind -T copy-mode-vi MouseDragEnd1Pane # don't exit copy mode when dragging with mouse
+
+# remove delay for exiting insert mode with ESC in Neovim
+set -sg escape-time 10
+
+# PANE SPLITS
+set -g pane-border-style fg=colour238
+set -g pane-active-border-style fg=colour252
+
+# tpm plugin
+set -g @plugin 'tmux-plugins/tpm'
+
+# list of tmux plugins
+set -g @plugin 'christoomey/vim-tmux-navigator'
+set -g @plugin 'tmux-plugins/tmux-resurrect' # persist tmux sessions after computer restart
+set -g @plugin 'tmux-plugins/tmux-continuum' # automatically saves sessions for you every 15 minutes
+# set -g @plugin 'fabioluciano/tmux-tokyo-night'
+set -g @plugin 'hendrikmi/tmux-cpu-mem-monitor' 
+
+# Load theme
+if-shell "[[ \"$TMUX_THEME\" == \"onedark\" ]]" 'source-file ~/.config/tmux/onedark-theme.conf' ""
+if-shell "[[ \"$TMUX_THEME\" == \"nord\" ]]" 'source-file ~/.config/tmux/nord-theme.conf' ""
+# set -g status-right "#{cpu} | #{mem} | #{disk}"
+# set -g status-right " CPU: #{cpu} |  MEM: #{mem -t} | 󱛟 DISK: #{disk -t}"
+# set -g status-right " CPU: #{cpu} |  MEM: #{mem} | 󱛟 DISK: #{disk}"
+
+
+set -g @resurrect-capture-pane-contents 'on'
+set -g @continuum-restore 'on'
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.config/tmux/plugins/tpm/tpm'
